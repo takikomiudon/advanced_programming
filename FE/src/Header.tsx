@@ -1,5 +1,6 @@
-import { AppShell, Burger } from "@mantine/core";
+import { AppShell, Burger, Image } from "@mantine/core";
 import React from "react";
+import logo from "./logo.webp";
 
 const Header = (props: { opened: boolean; toggle: () => void }) => {
   return (
@@ -10,7 +11,10 @@ const Header = (props: { opened: boolean; toggle: () => void }) => {
         hiddenFrom="sm"
         size="sm"
       />
-      <div>Logo</div>
+      <div className="flex flex-row items-center gap-4">
+        <Image src={logo} alt="logo" h={56} w={56} />
+        <h1 className="text-3xl font-bold">Chat Syllabus</h1>
+      </div>
     </AppShell.Header>
   );
 };
