@@ -1,5 +1,4 @@
 import { AppShell, Burger, Image } from "@mantine/core";
-import React from "react";
 import logo from "./logo.webp";
 
 const Header = (props: { opened: boolean; toggle: () => void }) => {

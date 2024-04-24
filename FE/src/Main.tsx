@@ -6,7 +6,7 @@ const Main = () => {
     <AppShell.Main className="flex flex-col justify-content-between h-full">
       <h1 className="text-3xl font-bold grow">Chat</h1>
       <div className="flex flex-row">
-        <Textarea className="grow"/>
+        <Textarea className="grow" />
         <ActionIcon>
           <IconSend2 />
         </ActionIcon>

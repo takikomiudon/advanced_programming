@@ -1,10 +1,7 @@
-import { AppShell } from '@mantine/core'
-import React from 'react'
+import { AppShell } from "@mantine/core";
 
 const Navbar = () => {
-  return (
-    <AppShell.Navbar p="md">Navbar</AppShell.Navbar>
-  )
-}
+  return <AppShell.Navbar p="md">Navbar</AppShell.Navbar>;
+};
 
-export default Navbar
+export default Navbar;

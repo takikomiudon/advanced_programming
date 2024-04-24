@@ -1,4 +1,3 @@
-import React from "react";
 import "./App.css";
 import { AppShell } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
