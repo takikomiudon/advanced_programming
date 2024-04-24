@@ -1,25 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+import { AppShell } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import Header from "./Header";
+import Navbar from "./Navbar";
+import Main from "./Main";
 
 function App() {
+  const [opened, { toggle }] = useDisclosure();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AppShell
+      header={{ height: 60 }}
+      navbar={{
+        width: 300,
+        breakpoint: "sm",
+        collapsed: { mobile: !opened },
+      }}
+      padding="md"
+    >
+      <Header opened={opened} toggle={toggle} />
+      <Navbar />
+      <Main />
+    </AppShell>
   );
 }
 
