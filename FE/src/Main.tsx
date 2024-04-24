@@ -5,6 +5,7 @@ import { useState } from "react";
 const Main = () => {
   const [messages, setMessages] = useState("");
   const [query, setQuery] = useState("");
+  const [composing, setComposing] = useState(false);
 
   const generateMessage = async (query: string) => {
     setQuery("");
@@ -29,7 +30,7 @@ const Main = () => {
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Enter" && !event.shiftKey) {
+    if (event.key === "Enter" && !event.shiftKey && !composing) {
       event.preventDefault();
       generateMessage(query);
     }
@@ -44,6 +45,8 @@ const Main = () => {
           value={query}
           onChange={(event) => setQuery(event.currentTarget.value)}
           onKeyDown={handleKeyDown}
+          onCompositionStart={() => setComposing(true)}
+          onCompositionEnd={() => setComposing(false)}
         />
         <ActionIcon onClick={() => generateMessage(query)}>
           <IconSend2 />
