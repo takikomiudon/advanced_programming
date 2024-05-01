@@ -42,9 +42,14 @@ function App() {
       }}
       padding="md"
     >
-      <Header opened={opened} toggle={toggle} />
+      <Header
+        opened={opened}
+        toggle={toggle}
+        supabase={supabase}
+        session={session}
+      />
       <Navbar />
-      <Main supabase={supabase} session={session}/>
+      <Main supabase={supabase} session={session} />
     </AppShell>
   );
 }

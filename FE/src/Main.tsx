@@ -47,36 +47,27 @@ const Main = (props: { supabase: SupabaseClient; session: Session | null }) => {
 
   return (
     <AppShell.Main className="flex flex-col justify-content-between h-full">
-      {props.session ? (
-        <>
-          <div className="flex flex-col gap-2 grow">
-            {histories.map((history, index) => (
-              <div key={index} className="flex flex-col gap-1">
-                <div className="text-gray-500">{history.query}</div>
-                <div>{history.response}</div>
-              </div>
-            ))}
+      <div className="flex flex-col gap-2 grow">
+        {histories.map((history, index) => (
+          <div key={index} className="flex flex-col gap-1">
+            <div className="text-gray-500">{history.query}</div>
+            <div>{history.response}</div>
           </div>
-          <div className="flex flex-row">
-            <Textarea
-              className="grow"
-              value={query}
-              onChange={(event) => setQuery(event.currentTarget.value)}
-              onKeyDown={handleKeyDown}
-              onCompositionStart={() => setComposing(true)}
-              onCompositionEnd={() => setComposing(false)}
-            />
-            <ActionIcon onClick={() => generateMessage(query)}>
-              <IconSend2 />
-            </ActionIcon>
-          </div>
-        </>
-      ) : (
-        <Auth
-          supabaseClient={props.supabase}
-          appearance={{ theme: ThemeSupa }}
+        ))}
+      </div>
+      <div className="flex flex-row">
+        <Textarea
+          className="grow"
+          value={query}
+          onChange={(event) => setQuery(event.currentTarget.value)}
+          onKeyDown={handleKeyDown}
+          onCompositionStart={() => setComposing(true)}
+          onCompositionEnd={() => setComposing(false)}
         />
-      )}
+        <ActionIcon onClick={() => generateMessage(query)}>
+          <IconSend2 />
+        </ActionIcon>
+      </div>
     </AppShell.Main>
   );
 };
