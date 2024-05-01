@@ -1,5 +1,5 @@
 import { ActionIcon, AppShell, Loader, Textarea } from "@mantine/core";
-import { IconSend2 } from "@tabler/icons-react";
+import { IconBrandOpenai, IconSend2, IconUser } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { History } from "./types/history";
 import { Session, SupabaseClient } from "@supabase/supabase-js";
@@ -68,11 +68,20 @@ const Main = (props: { supabase: SupabaseClient; session: Session | null }) => {
       <div className="flex flex-col gap-2 grow">
         {histories.map((history, index) => (
           <div key={index} className="flex flex-col gap-1">
-            <div className="text-gray-500">{history.query}</div>
-            <div>{history.response}</div>
+            <div className="flex flex-row text-gray-500">
+              <IconUser className="mr-4"/>
+              {history.query}
+            </div>
+            <div className="flex flex-row">
+              <IconBrandOpenai stroke={1} className="shrink-0 mr-4" />
+              {isLoading && index === histories.length - 1 ? (
+                <Loader size={16} />
+              ) : (
+                history.response
+              )}
+            </div>
           </div>
         ))}
-        {isLoading ? <Loader size={16} /> : null}
       </div>
       <div className="flex flex-row">
         <Textarea
