@@ -1,11 +1,20 @@
 import { ActionIcon, AppShell, Textarea } from "@mantine/core";
 import { IconSend2 } from "@tabler/icons-react";
 import { useState } from "react";
+import { History } from "./types/history";
 
 const Main = () => {
-  const [messages, setMessages] = useState("");
   const [query, setQuery] = useState("");
   const [composing, setComposing] = useState(false);
+  const [histories, setHistories] = useState<History[]>([]);
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey && !composing) {
+      event.preventDefault();
+      setHistories([...histories, { query, response: "" }]);
+      generateMessage(query);
+    }
+  };
 
   const generateMessage = async (query: string) => {
     setQuery("");
@@ -23,22 +32,28 @@ const Main = () => {
         throw new Error("Failed to fetch messages");
       }
       const data = await response.text();
-      setMessages(data);
+      setHistories((histories) =>
+        histories.map((history, index) =>
+          index === histories.length - 1
+            ? { query: history.query, response: data }
+            : history
+        )
+      );
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Enter" && !event.shiftKey && !composing) {
-      event.preventDefault();
-      generateMessage(query);
-    }
-  };
-
   return (
     <AppShell.Main className="flex flex-col justify-content-between h-full">
-      <h1 className="text-3xl font-bold grow">{messages}</h1>
+      <div className="flex flex-col gap-2 grow">
+        {histories.map((history, index) => (
+          <div key={index} className="flex flex-col gap-1">
+            <div className="text-gray-500">{history.query}</div>
+            <div>{history.response}</div>
+          </div>
+        ))}
+      </div>
       <div className="flex flex-row">
         <Textarea
           className="grow"
