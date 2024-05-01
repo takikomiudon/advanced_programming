@@ -4,13 +4,13 @@ import logo from "./logo.webp";
 const Header = (props: { opened: boolean; toggle: () => void }) => {
   return (
     <AppShell.Header>
-      <Burger
-        opened={props.opened}
-        onClick={props.toggle}
-        hiddenFrom="sm"
-        size="sm"
-      />
       <div className="flex flex-row items-center gap-4">
+        <Burger
+          opened={props.opened}
+          onClick={props.toggle}
+          hiddenFrom="sm"
+          size="sm"
+        />
         <Image src={logo} alt="logo" h={56} w={56} />
         <h1 className="text-3xl font-bold grow">Chat Syllabus</h1>
         <Button className="mr-4">Sign In</Button>
