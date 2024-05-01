@@ -4,9 +4,33 @@ import { useDisclosure } from "@mantine/hooks";
 import Header from "./Header";
 import Navbar from "./Navbar";
 import Main from "./Main";
+import { createClient, Session } from "@supabase/supabase-js";
+import { useEffect, useState } from "react";
+
+const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL!,
+  process.env.REACT_APP_SUPABASE_ANON_KEY!
+);
 
 function App() {
+  const [session, setSession] = useState<Session | null>(null);
   const [opened, { toggle }] = useDisclosure();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  });
 
   return (
     <AppShell
@@ -20,7 +44,7 @@ function App() {
     >
       <Header opened={opened} toggle={toggle} />
       <Navbar />
-      <Main />
+      <Main supabase={supabase} session={session}/>
     </AppShell>
   );
 }
