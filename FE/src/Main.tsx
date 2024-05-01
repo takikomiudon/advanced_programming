@@ -1,6 +1,6 @@
 import { ActionIcon, AppShell, Textarea } from "@mantine/core";
 import { IconSend2 } from "@tabler/icons-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { History } from "./types/history";
 import { Session, SupabaseClient } from "@supabase/supabase-js";
 
@@ -16,6 +16,24 @@ const Main = (props: { supabase: SupabaseClient; session: Session | null }) => {
       generateMessage(query);
     }
   };
+
+  const fetchHistories = async () => {
+    if (props.session) {
+      const { data, error } = await props.supabase
+        .from("histories")
+        .select("*")
+        .eq("user_id", props.session.user.id);
+      if (error) {
+        throw error;
+      }
+      console.log(data);
+      setHistories(data as History[]);
+    }
+  };
+
+  useEffect(() => {
+    fetchHistories();
+  }, [props.session?.user.id]);
 
   const generateMessage = async (query: string) => {
     setQuery("");
@@ -40,6 +58,7 @@ const Main = (props: { supabase: SupabaseClient; session: Session | null }) => {
           : history
       )
     );
+    fetchHistories();
   };
 
   return (
