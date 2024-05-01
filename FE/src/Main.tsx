@@ -3,8 +3,6 @@ import { IconSend2 } from "@tabler/icons-react";
 import { useState } from "react";
 import { History } from "./types/history";
 import { Session, SupabaseClient } from "@supabase/supabase-js";
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
 
 const Main = (props: { supabase: SupabaseClient; session: Session | null }) => {
   const [query, setQuery] = useState("");
@@ -27,9 +25,8 @@ const Main = (props: { supabase: SupabaseClient; session: Session | null }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        user_id: props.session?.user.id,
+        user_id: props.session ? props.session.user.id : null,
         query: query,
-        is_logged_in: props.session ? true : false,
       }),
     });
     if (!response.ok) {

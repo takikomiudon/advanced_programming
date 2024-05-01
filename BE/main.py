@@ -54,7 +54,6 @@ def query():
         content = request.get_json()
         user_id = content["user_id"]
         query = content["query"]
-        is_logged_in = content["is_logged_in"]
         response = query_engine.query(query + "日本語で回答してください。")
         response.print_response_stream()
         print("\n")
@@ -66,7 +65,7 @@ def query():
             print(f"Metadata:\t {node.node.metadata}")
             print(f"Score:\t {node.score:.3f}")
 
-        if is_logged_in:
+        if user_id:
             supabase.table('histories').insert({
                 'user_id': user_id,
                 'query': query,
