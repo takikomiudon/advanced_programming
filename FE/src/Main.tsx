@@ -1,4 +1,4 @@
-import { ActionIcon, AppShell, Textarea } from "@mantine/core";
+import { ActionIcon, AppShell, Loader, Textarea } from "@mantine/core";
 import { IconSend2 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { History } from "./types/history";
@@ -8,11 +8,13 @@ const Main = (props: { supabase: SupabaseClient; session: Session | null }) => {
   const [query, setQuery] = useState("");
   const [composing, setComposing] = useState(false);
   const [histories, setHistories] = useState<History[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !event.shiftKey && !composing) {
       event.preventDefault();
       setHistories([...histories, { query, response: "" }]);
+      setIsLoading(true);
       generateMessage(query);
     }
   };
@@ -26,7 +28,6 @@ const Main = (props: { supabase: SupabaseClient; session: Session | null }) => {
       if (error) {
         throw error;
       }
-      console.log(data);
       setHistories(data as History[]);
     }
   };
@@ -59,6 +60,7 @@ const Main = (props: { supabase: SupabaseClient; session: Session | null }) => {
       )
     );
     fetchHistories();
+    setIsLoading(false);
   };
 
   return (
@@ -70,6 +72,7 @@ const Main = (props: { supabase: SupabaseClient; session: Session | null }) => {
             <div>{history.response}</div>
           </div>
         ))}
+        {isLoading ? <Loader size={16} /> : null}
       </div>
       <div className="flex flex-row">
         <Textarea
