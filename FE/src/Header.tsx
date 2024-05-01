@@ -10,6 +10,7 @@ const Header = (props: { opened: boolean; toggle: () => void }) => {
           onClick={props.toggle}
           hiddenFrom="sm"
           size="sm"
+          className="ml-4"
         />
         <Image src={logo} alt="logo" h={56} w={56} />
         <h1 className="text-3xl font-bold grow">Chat Syllabus</h1>
