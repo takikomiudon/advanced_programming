@@ -10,8 +10,15 @@ from dotenv import load_dotenv
 from pathlib import Path
 from flask import Flask, request
 from flask_cors import CORS
+from supabase import create_client
+import os
 
 load_dotenv()
+
+supabase = create_client(
+    os.getenv("SUPABASE_URL"),
+    os.getenv("SUPABASE_ANON_KEY")
+)
 
 app = Flask(__name__)
 CORS(app)
@@ -45,7 +52,9 @@ query_engine = index.as_query_engine(streaming=True, similarity_top_k=10)
 def query():
     if request.is_json:
         content = request.get_json()
+        user_id = content["user_id"]
         query = content["query"]
+        is_logged_in = content["is_logged_in"]
         response = query_engine.query(query + "日本語で回答してください。")
         response.print_response_stream()
         print("\n")
@@ -56,6 +65,13 @@ def query():
             print(f"Text:\t {text_fmt} ...")
             print(f"Metadata:\t {node.node.metadata}")
             print(f"Score:\t {node.score:.3f}")
+
+        if is_logged_in:
+            supabase.table('histories').insert({
+                'user_id': user_id,
+                'query': query,
+                'response': str(response),
+            }).execute()
 
         return str(response), 200
     else:

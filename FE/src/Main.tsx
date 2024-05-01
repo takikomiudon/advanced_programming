@@ -27,7 +27,9 @@ const Main = (props: { supabase: SupabaseClient; session: Session | null }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        user_id: props.session?.user.id,
         query: query,
+        is_logged_in: props.session ? true : false,
       }),
     });
     if (!response.ok) {
