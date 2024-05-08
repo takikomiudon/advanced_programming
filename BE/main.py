@@ -25,12 +25,6 @@ CORS(app)
 
 llm = OpenAI(temperature=0, model="gpt-4-turbo")
 
-reader = PDFTableReader()
-syllabus_path = Path("./data/syllabus.pdf")
-syllabus = reader.load_data(file=syllabus_path, pages="5-477")
-course_guide_path = Path("./data/rishu-tebiki.pdf")
-course_guide = reader.load_data(file=course_guide_path, pages="6-118")
-
 syllabus_db = chromadb.PersistentClient(path="./chroma_db")
 syllabus_chroma_collection = syllabus_db.get_or_create_collection("quickstart")
 course_guide_db = chromadb.PersistentClient(path="./chroma_db")
@@ -49,28 +43,35 @@ course_guide_storage_context = StorageContext.from_defaults(
     vector_store=course_guide_vector_store
 )
 
-# if Path("./chroma_db").exists():
-#     syllabus_index = VectorStoreIndex.from_vector_store(
-#         syllabus_vector_store, storage_context=syllabus_storage_context
-#     )
-#     course_guide_index = VectorStoreIndex.from_vector_store(
-#         course_guide_vector_store, storage_context=course_guide_storage_context
-#     )
-#     print("Loaded index from storage.")
-# else:
-syllabus_index = VectorStoreIndex.from_documents(
-    syllabus, storage_context=syllabus_storage_context
-)
-course_guide_index = VectorStoreIndex.from_documents(
-    course_guide, storage_context=course_guide_storage_context
-)
+if Path("./chroma_db").exists():
+    syllabus_index = VectorStoreIndex.from_vector_store(
+        syllabus_vector_store, storage_context=syllabus_storage_context
+    )
+    course_guide_index = VectorStoreIndex.from_vector_store(
+        course_guide_vector_store, storage_context=course_guide_storage_context
+    )
+    print("Loaded index from storage.")
+else:
+    reader = PDFTableReader()
+    syllabus_path = Path("./data/syllabus.pdf")
+    syllabus = reader.load_data(file=syllabus_path, pages="5-477")
+    course_guide_path = Path("./data/rishu-tebiki.pdf")
+    course_guide = reader.load_data(file=course_guide_path, pages="6-118")
+
+    syllabus_index = VectorStoreIndex.from_documents(
+        syllabus, storage_context=syllabus_storage_context
+    )
+    course_guide_index = VectorStoreIndex.from_documents(
+        course_guide, storage_context=course_guide_storage_context
+    )
+    print("Created index from documents.")
 
 syllabus_query_engine = syllabus_index.as_query_engine(
-    streaming=True, similarity_top_k=10
+    streaming=True
 )
 
 course_guide_query_engine = course_guide_index.as_query_engine(
-    streaming=True, similarity_top_k=10
+    streaming=True
 )
 
 
