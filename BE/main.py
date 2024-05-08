@@ -1,6 +1,6 @@
 import chromadb
 from llama_index.core import (
-  VectorStoreIndex, 
+  VectorStoreIndex,
   StorageContext,
 )
 from llama_index.readers.pdf_table import PDFTableReader
@@ -26,35 +26,90 @@ CORS(app)
 llm = OpenAI(temperature=0, model="gpt-4-turbo")
 
 reader = PDFTableReader()
-pdf_path = Path("./data/syllabus.pdf")
-documents = reader.load_data(file=pdf_path, pages="all")
+syllabus_path = Path("./data/syllabus.pdf")
+syllabus = reader.load_data(file=syllabus_path, pages="5-477")
+course_guide_path = Path("./data/rishu-tebiki.pdf")
+course_guide = reader.load_data(file=course_guide_path, pages="6-118")
 
-db = chromadb.PersistentClient(path="./chroma_db")
-chroma_collection = db.get_or_create_collection("quickstart")
+syllabus_db = chromadb.PersistentClient(path="./chroma_db")
+syllabus_chroma_collection = syllabus_db.get_or_create_collection("quickstart")
+course_guide_db = chromadb.PersistentClient(path="./chroma_db")
+course_guide_chroma_collection = course_guide_db.get_or_create_collection("quickstart")
 
-vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
-storage_context = StorageContext.from_defaults(vector_store=vector_store)
+syllabus_vector_store = ChromaVectorStore(
+    chroma_collection=syllabus_chroma_collection
+)
+syllabus_storage_context = StorageContext.from_defaults(
+    vector_store=syllabus_vector_store
+)
+course_guide_vector_store = ChromaVectorStore(
+    chroma_collection=course_guide_chroma_collection
+)
+course_guide_storage_context = StorageContext.from_defaults(
+    vector_store=course_guide_vector_store
+)
 
-if Path("./chroma_db").exists():
-    index = VectorStoreIndex.from_vector_store(
-        vector_store, storage_context=storage_context
-    )
-    print("Loaded index from storage.")
-else:
-    index = VectorStoreIndex.from_documents(
-        documents, storage_context=storage_context
-    )
+# if Path("./chroma_db").exists():
+#     syllabus_index = VectorStoreIndex.from_vector_store(
+#         syllabus_vector_store, storage_context=syllabus_storage_context
+#     )
+#     course_guide_index = VectorStoreIndex.from_vector_store(
+#         course_guide_vector_store, storage_context=course_guide_storage_context
+#     )
+#     print("Loaded index from storage.")
+# else:
+syllabus_index = VectorStoreIndex.from_documents(
+    syllabus, storage_context=syllabus_storage_context
+)
+course_guide_index = VectorStoreIndex.from_documents(
+    course_guide, storage_context=course_guide_storage_context
+)
 
-query_engine = index.as_query_engine(streaming=True, similarity_top_k=10)
+syllabus_query_engine = syllabus_index.as_query_engine(
+    streaming=True, similarity_top_k=10
+)
+
+course_guide_query_engine = course_guide_index.as_query_engine(
+    streaming=True, similarity_top_k=10
+)
 
 
-@app.route("/", methods=["POST"])
-def query():
+@app.route("/syllabus", methods=["POST"])
+def syllabus():
     if request.is_json:
         content = request.get_json()
         user_id = content["user_id"]
         query = content["query"]
-        response = query_engine.query(query + "日本語で回答してください。")
+        response = syllabus_query_engine.query(query + "日本語で回答してください。")
+        response.print_response_stream()
+        print("\n")
+
+        for node in response.source_nodes:
+            print("------")
+            text_fmt = node.node.get_content().strip().replace("\n", " ")[:1000]
+            print(f"Text:\t {text_fmt} ...")
+            print(f"Metadata:\t {node.node.metadata}")
+            print(f"Score:\t {node.score:.3f}")
+
+        if user_id:
+            supabase.table('histories').insert({
+                'user_id': user_id,
+                'query': query,
+                'response': str(response),
+            }).execute()
+
+        return str(response), 200
+    else:
+        return "Request was not JSON", 400
+
+
+@app.route("/course_guide", methods=["POST"])
+def course_guide():
+    if request.is_json:
+        content = request.get_json()
+        user_id = content["user_id"]
+        query = content["query"]
+        response = course_guide_query_engine.query(query + "日本語で回答してください。")
         response.print_response_stream()
         print("\n")
 

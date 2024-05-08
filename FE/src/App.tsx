@@ -15,7 +15,7 @@ const supabase = createClient(
 function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [opened, { toggle }] = useDisclosure();
-  const [documentId, setDocumentId] = useState(0);
+  const [document, setDocument] = useState("syllabus");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -49,8 +49,8 @@ function App() {
         supabase={supabase}
         session={session}
       />
-      <Navbar documentId={documentId} setDocumentId={setDocumentId} />
-      <Main supabase={supabase} session={session} />
+      <Navbar document={document} setDocument={setDocument} />
+      <Main document={document} supabase={supabase} session={session} />
     </AppShell>
   );
 }

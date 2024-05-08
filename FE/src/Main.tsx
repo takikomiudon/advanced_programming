@@ -4,7 +4,11 @@ import { useEffect, useState } from "react";
 import { History } from "./types/history";
 import { Session, SupabaseClient } from "@supabase/supabase-js";
 
-const Main = (props: { supabase: SupabaseClient; session: Session | null }) => {
+const Main = (props: {
+  document: string;
+  supabase: SupabaseClient;
+  session: Session | null;
+}) => {
   const [query, setQuery] = useState("");
   const [composing, setComposing] = useState(false);
   const [histories, setHistories] = useState<History[]>([]);
@@ -38,7 +42,7 @@ const Main = (props: { supabase: SupabaseClient; session: Session | null }) => {
 
   const generateMessage = async (query: string) => {
     setQuery("");
-    const response = await fetch("http://127.0.0.1:5000/", {
+    const response = await fetch("http://127.0.0.1:5000/" + props.document, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -69,7 +73,7 @@ const Main = (props: { supabase: SupabaseClient; session: Session | null }) => {
         {histories.map((history, index) => (
           <div key={index} className="flex flex-col gap-1">
             <div className="flex flex-row text-gray-500">
-              <IconUser className="mr-4"/>
+              <IconUser className="mr-4" />
               {history.query}
             </div>
             <div className="flex flex-row">

@@ -1,23 +1,23 @@
 import { AppShell, Button, Divider } from "@mantine/core";
 
 const Navbar = (props: {
-  documentId: number;
-  setDocumentId: React.Dispatch<React.SetStateAction<number>>;
+  document: string;
+  setDocument: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   return (
     <AppShell.Navbar p="md">
       <Button
-        onClick={() => props.setDocumentId(0)}
+        onClick={() => props.setDocument("syllabus")}
         className="my-2"
-        variant={props.documentId === 0 ? "filled" : "light"}
+        variant={props.document === "syllabus" ? "filled" : "light"}
       >
         シラバス
       </Button>
       <Divider />
       <Button
-        onClick={() => props.setDocumentId(1)}
+        onClick={() => props.setDocument("course_guide")}
         className="my-2"
-        variant={props.documentId === 1 ? "filled" : "light"}
+        variant={props.document === "course_guide" ? "filled" : "light"}
       >
         履修の手引き
       </Button>
