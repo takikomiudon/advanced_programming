@@ -9,7 +9,7 @@ from llama_index.llms.openai import OpenAI
 from llama_index.vector_stores.chroma import ChromaVectorStore
 from dotenv import load_dotenv
 from pathlib import Path
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from supabase import create_client
 import os
@@ -70,11 +70,13 @@ else:
     print("Created index from documents.")
 
 syllabus_query_engine = syllabus_index.as_query_engine(
-    streaming=True
+    streaming=True,
+    similarity_top_k=1
 )
 
 course_guide_query_engine = course_guide_index.as_query_engine(
-    streaming=True
+    streaming=True,
+    similarity_top_k=1
 )
 
 
@@ -100,9 +102,17 @@ def syllabus():
                 'user_id': user_id,
                 'query': query,
                 'response': str(response),
+                'page': "",
+                'score': node.score,
             }).execute()
 
-        return str(response), 200
+        result = {
+            "response": str(response),
+            "page": "",
+            "score": node.score,
+        }
+
+        return jsonify(result), 200
     else:
         return "Request was not JSON", 400
 
@@ -129,9 +139,17 @@ def course_guide():
                 'user_id': user_id,
                 'query': query,
                 'response': str(response),
+                'page': node.node.metadata["page_label"],
+                'score': node.score,
             }).execute()
 
-        return str(response), 200
+        result = {
+            "response": str(response),
+            "page": node.node.metadata["page_label"],
+            "score": node.score,
+        }
+
+        return jsonify(result), 200
     else:
         return "Request was not JSON", 400
 

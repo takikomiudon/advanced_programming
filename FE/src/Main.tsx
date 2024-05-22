@@ -17,7 +17,7 @@ const Main = (props: {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !event.shiftKey && !composing) {
       event.preventDefault();
-      setHistories([...histories, { query, response: "" }]);
+      setHistories([...histories, { query, response: "", page: 0, score: 0 }]);
       setIsLoading(true);
       generateMessage(query);
     }
@@ -55,11 +55,17 @@ const Main = (props: {
     if (!response.ok) {
       throw new Error("Failed to fetch messages");
     }
-    const data = await response.text();
+    const data = await response.json();
+
     setHistories((histories) =>
       histories.map((history, index) =>
         index === histories.length - 1
-          ? { query: history.query, response: data }
+          ? {
+              query: history.query,
+              response: data.response,
+              page: Number(data.page),
+              score: data.score,
+            }
           : history
       )
     );
@@ -81,7 +87,15 @@ const Main = (props: {
               {isLoading && index === histories.length - 1 ? (
                 <Loader size={16} />
               ) : (
-                history.response
+                <div className="flex flex-col">
+                  {history.response}
+                  <div>
+                    {history.page !== 0 && (
+                      <div>参照したページ: {history.page}</div>
+                    )}
+                    類似度: {history.score.toFixed(3)}
+                  </div>
+                </div>
               )}
             </div>
           </div>
