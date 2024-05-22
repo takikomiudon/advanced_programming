@@ -1,7 +1,8 @@
 import chromadb
 from llama_index.core import (
-  VectorStoreIndex,
-  StorageContext,
+    VectorStoreIndex,
+    SimpleDirectoryReader,
+    StorageContext,
 )
 from llama_index.readers.pdf_table import PDFTableReader
 from llama_index.llms.openai import OpenAI
@@ -55,8 +56,10 @@ else:
     reader = PDFTableReader()
     syllabus_path = Path("./data/syllabus.pdf")
     syllabus = reader.load_data(file=syllabus_path, pages="5-477")
+
+    reader = SimpleDirectoryReader(input_files=["./data/rishu-tebiki.pdf"])
     course_guide_path = Path("./data/rishu-tebiki.pdf")
-    course_guide = reader.load_data(file=course_guide_path, pages="6-118")
+    course_guide = reader.load_data()
 
     syllabus_index = VectorStoreIndex.from_documents(
         syllabus, storage_context=syllabus_storage_context
