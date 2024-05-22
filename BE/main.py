@@ -25,9 +25,9 @@ CORS(app)
 
 llm = OpenAI(temperature=0, model="gpt-4-turbo")
 
-syllabus_db = chromadb.PersistentClient(path="./chroma_db")
+syllabus_db = chromadb.PersistentClient(path="./syllabus_db")
 syllabus_chroma_collection = syllabus_db.get_or_create_collection("quickstart")
-course_guide_db = chromadb.PersistentClient(path="./chroma_db")
+course_guide_db = chromadb.PersistentClient(path="./course_guide_db")
 course_guide_chroma_collection = course_guide_db.get_or_create_collection("quickstart")
 
 syllabus_vector_store = ChromaVectorStore(
@@ -43,7 +43,7 @@ course_guide_storage_context = StorageContext.from_defaults(
     vector_store=course_guide_vector_store
 )
 
-if Path("./chroma_db").exists():
+if True:
     syllabus_index = VectorStoreIndex.from_vector_store(
         syllabus_vector_store, storage_context=syllabus_storage_context
     )
