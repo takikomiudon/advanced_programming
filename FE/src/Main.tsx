@@ -90,7 +90,7 @@ const Main = (props: {
                 <div className="flex flex-col">
                   {history.response}
                   <div>
-                    {history.page !== 0 && (
+                    {history.page > 0 && (
                       <div>参照したページ: {history.page}</div>
                     )}
                     類似度: {history.score.toFixed(3)}
