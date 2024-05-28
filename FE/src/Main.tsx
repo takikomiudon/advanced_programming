@@ -42,7 +42,7 @@ const Main = (props: {
 
   const generateMessage = async (query: string) => {
     setQuery("");
-    const response = await fetch("http://127.0.0.1:5000/" + props.document, {
+    const response = await fetch("http://127.0.0.1:8080/" + props.document, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
